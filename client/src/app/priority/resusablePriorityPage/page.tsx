@@ -9,8 +9,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { dataGridClassNames, dataGridSxStyles } from '@/src/lib/utils';
 import { useUser } from "@clerk/nextjs";
 
-
-type Props =  {
+// Define the Props interface before the component
+interface Props {
   priority: Priority;
 }
 
@@ -70,13 +70,12 @@ const columns: GridColDef[] = [
   },
 ];
 
-const ReuseablePriorityPage = ({ priority }: Props) => {
+const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
   const { user } = useUser();
   const userId = user?.id || ""; // Fetching the user ID safely
-  console.log("priority user Id", userId);
 
   const { data: tasks, isLoading, isError: isTasksError } = useGetTasksByUserQuery(
     { userId }, 
