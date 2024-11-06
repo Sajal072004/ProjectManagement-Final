@@ -9,8 +9,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { dataGridClassNames, dataGridSxStyles } from '@/src/lib/utils';
 import { useUser } from "@clerk/nextjs";
 
-// Define the Props type at the top
-interface Props {
+
+type Props =  {
   priority: Priority;
 }
 
@@ -70,7 +70,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
+const ReuseablePriorityPage = ({ priority }: Props) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
