@@ -69,7 +69,7 @@ const columns: GridColDef[] = [
   },
 ];
 
- export default function ReuseablePriorityPage({ priority }: {priority : Priority}) {
+ export default function ReuseablePriorityPage({priority}:any) {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
