@@ -131,7 +131,7 @@ app.get('/update-projects', async (req, res) => {
     res.send('Projects update initiated. Check the console for results.');
 });
 
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/7 * * * *', async () => {
     const url = 'https://projectmanagement-final.onrender.com/projects/projects';
     try {
         const response = await fetch(url, {
