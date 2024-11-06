@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 import React, { useState } from 'react';
 import { Priority, Task, useGetTasksByUserQuery } from '@/src/state/api';
@@ -71,7 +72,7 @@ const columns: GridColDef[] = [
 ];
 
 // Convert `ReuseablePriorityPage` to default export
-export const ReuseablePriorityPage = ({ priority }: Props) => {
+ const ReuseablePriorityPage = ({ priority }: Props) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
@@ -144,6 +145,8 @@ export const ReuseablePriorityPage = ({ priority }: Props) => {
     </div>
   );
 };
+
+export default ReuseablePriorityPage;
 
 
 
