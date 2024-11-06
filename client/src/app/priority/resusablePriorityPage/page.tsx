@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 "use client";
 import React, { useState } from 'react';
 import { Priority, Task, useGetTasksByUserQuery } from '@/src/state/api';
@@ -10,12 +10,10 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { dataGridClassNames, dataGridSxStyles } from '@/src/lib/utils';
 import { useUser } from "@clerk/nextjs";
 
-// Define the Props interface before the component
-interface Props {
-  priority: Priority;
-}
 
-// Columns for the DataGrid
+
+
+
 const columns: GridColDef[] = [
   {
     field: "title",
@@ -71,17 +69,16 @@ const columns: GridColDef[] = [
   },
 ];
 
-// Convert `ReuseablePriorityPage` to default export
- const ReuseablePriorityPage = ({ priority }: Props) => {
+ const ReuseablePriorityPage = ({ priority }: {priority : Priority}) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
   const { user } = useUser();
-  const userId = user?.id || ""; // Fetching the user ID safely
+  const userId = user?.id || ""; 
 
   const { data: tasks, isLoading, isError: isTasksError } = useGetTasksByUserQuery(
     { userId },
-    { skip: !userId } // Skip the query if userId is not available
+    { skip: !userId } 
   );
 
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
