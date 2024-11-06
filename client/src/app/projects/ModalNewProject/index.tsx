@@ -3,7 +3,7 @@ import { useCreateProjectMutation } from "@/src/state/api";
 import React, { useState } from "react";
 import { formatISO } from "date-fns";
 import { useUser } from "@clerk/nextjs"; // Import useUser from Clerk
-import { toast } from "react-toastify"; // Import toast for notifications
+import { toast } from "react-toastify";
 
 type Props = {
   isOpen: boolean;

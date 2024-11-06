@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { clerkMiddleware } from '@clerk/express'; // Import the required middleware
+const cron = require('node-cron');
 
 // Import Routes
 import projectRoutes from './routes/project-routes';
@@ -128,6 +129,23 @@ async function updateProjects() {
 app.get('/update-projects', async (req, res) => {
     await updateProjects();
     res.send('Projects update initiated. Check the console for results.');
+});
+
+cron.schedule('*/2 * * * *', async () => {
+    const url = 'https://projectmanagement-final.onrender.com/projects/projects';
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            console.log('URL hit successfully!');
+        } else {
+            console.log('Failed to hit the URL:', response.statusText);
+        }
+    } catch (error) {
+        console.log('Error hitting the URL:', error);
+    }
 });
 
 // Server
