@@ -70,7 +70,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
+export const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
@@ -144,4 +144,4 @@ const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
   );
 };
 
-export default ReuseablePriorityPage;
+
