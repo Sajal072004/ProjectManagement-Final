@@ -70,7 +70,8 @@ const columns: GridColDef[] = [
   },
 ];
 
-export const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
+// Convert `ReuseablePriorityPage` to default export
+const ReuseablePriorityPage = ({ priority }: Props) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
@@ -78,7 +79,7 @@ export const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
   const userId = user?.id || ""; // Fetching the user ID safely
 
   const { data: tasks, isLoading, isError: isTasksError } = useGetTasksByUserQuery(
-    { userId }, 
+    { userId },
     { skip: !userId } // Skip the query if userId is not available
   );
 
@@ -144,4 +145,5 @@ export const ReuseablePriorityPage: React.FC<Props> = ({ priority }) => {
   );
 };
 
-
+// Ensure the default export is used
+export default ReuseablePriorityPage;
