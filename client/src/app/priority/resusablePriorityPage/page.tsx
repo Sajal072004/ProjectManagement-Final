@@ -71,7 +71,7 @@ const columns: GridColDef[] = [
 ];
 
 // Convert `ReuseablePriorityPage` to default export
-const ReuseablePriorityPage = ({ priority }: Props) => {
+export const ReuseablePriorityPage = ({ priority }: Props) => {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
@@ -145,5 +145,5 @@ const ReuseablePriorityPage = ({ priority }: Props) => {
   );
 };
 
-// Ensure the default export is used
-export default ReuseablePriorityPage;
+
+
