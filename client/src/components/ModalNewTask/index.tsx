@@ -1,5 +1,10 @@
 import Modal from "../Modal";
-import { useCreateTaskMutation, Priority, Status, useGetCognitoIdByUsernameQuery } from "@/src/state/api"; // Import the query hook
+import {
+  useCreateTaskMutation,
+  Priority,
+  Status,
+  useGetCognitoIdByUsernameQuery,
+} from "@/src/state/api"; // Import the query hook
 import React, { useState } from "react";
 import { formatISO } from "date-fns";
 import { useUser } from "@clerk/nextjs"; // Import Clerk's useUser hook
@@ -26,13 +31,15 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
   const [dueDate, setDueDate] = useState("");
   const [authorUserId, setAuthorUserId] = useState<string | undefined>(userId); // Author userId (from Clerk)
   const [assignedUsername, setAssignedUsername] = useState(""); // Username input
-  const [assignedCognitoId, setAssignedCognitoId] = useState<string | null>(null); // Fetched cognitoId
+  const [assignedCognitoId, setAssignedCognitoId] = useState<string | null>(
+    null,
+  ); // Fetched cognitoId
   const [projectId, setProjectId] = useState("");
 
   // Fetch cognitoId by username
   const { data: assignedUserData } = useGetCognitoIdByUsernameQuery(
     { username: assignedUsername },
-    { skip: !assignedUsername } // Skip until there's a username
+    { skip: !assignedUsername }, // Skip until there's a username
   );
 
   // Update assignedCognitoId when assignedUserData changes
@@ -56,13 +63,13 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
       await createTask({
         title,
         description,
-        status,
+        status: status || Status.ToDo,
         priority,
         tags,
         startDate: formattedStartDate,
         dueDate: formattedDueDate,
-        authorUserId: authorUserId!, // Use the extracted userId
-        assignedUserId: assignedCognitoId || "", // Use fetched cognitoId
+        authorUserId: authorUserId!,
+        assignedUserId: assignedCognitoId || "",
         projectId: id !== null ? Number(id) : Number(projectId),
       });
 
@@ -116,7 +123,7 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        
+
         {/* Task Description */}
         <textarea
           className={inputStyles}
@@ -130,11 +137,8 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           <select
             className={selectStyles}
             value={status}
-            onChange={(e) =>
-              setStatus(Status[e.target.value as keyof typeof Status])
-            }
+            onChange={(e) => setStatus(e.target.value as Status)}
           >
-            <option value="">Select Status</option>
             <option value={Status.ToDo}>To Do</option>
             <option value={Status.WorkInProgress}>Work In Progress</option>
             <option value={Status.UnderReview}>Under Review</option>
