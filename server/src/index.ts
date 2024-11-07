@@ -61,8 +61,8 @@ app.post('/webhook/clerk', async (req, res) => {
     switch (event.type) {
         case 'user.created':
             const user = event.data;
-            // Create user in your database
             try {
+                // Create the user in the database
                 await prisma.user.create({
                     data: {
                         cognitoId: user.id,
@@ -71,11 +71,29 @@ app.post('/webhook/clerk', async (req, res) => {
                     },
                 });
                 console.log('User created in database:', user.username);
+
+                // Create a dummy project for the new user
+                const startDate = new Date();
+                const endDate = new Date();
+                endDate.setDate(startDate.getDate() + 30); // Set end date 30 days from start date
+
+                await prisma.project.create({
+                    data: {
+                        name: 'Dummy Project',
+                        description: 'This is a default project for new users.',
+                        startDate: startDate,
+                        endDate: endDate,
+                        cognitoId: user.id,
+                    },
+                });
+                console.log('Dummy project created for user:', user.username);
+
             } catch (error) {
-                console.error('Error creating user in database:', error);
-                return res.status(500).send('Error creating user');
+                console.error('Error creating user or dummy project in database:', error);
+                return res.status(500).send('Error creating user or project');
             }
             break;
+
 
         case 'user.updated':
             const updatedUser = event.data;
@@ -85,7 +103,7 @@ app.post('/webhook/clerk', async (req, res) => {
                     where: { cognitoId: updatedUser.id },
                     data: {
                         username: updatedUser.username,
-                        profilePictureUrl: updatedUser.profile_picture_url || null,
+                        profilePictureUrl: updatedUser.image_url || null,
                     },
                 });
                 console.log('User updated in database:', updatedUser.username);

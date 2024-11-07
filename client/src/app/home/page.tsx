@@ -9,7 +9,7 @@ import {
   useGetTasksQuery,
 } from "@/src/state/api";
 
-import React from "react";
+import React, { useState } from "react";
 import { useAppSelector } from "../redux";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Header from "@/src/components/Header";
@@ -29,6 +29,7 @@ import {
 import { dataGridClassNames, dataGridSxStyles } from "@/src/lib/utils";
 import { useUser } from "@clerk/nextjs";
 
+
 const taskColumns: GridColDef[] = [
   { field: "title", headerName: "Title", width: 200 },
   { field: "status", headerName: "Status", width: 150 },
@@ -42,6 +43,7 @@ const HomePage = () => {
   const { user } = useUser(); // Clerk's useUser hook to get the user data
   const cognitoId = user?.id || ""; // Fetching the Cognito ID
   console.log("Cognito ID: ", cognitoId);
+  
 
   // Fetch tasks and projects using cognitoId
   const {
@@ -110,10 +112,14 @@ const HomePage = () => {
         text: "#000000",
       };
 
+      
+
   return (
     <div className="container h-full w-[100%] bg-gray-100 bg-transparent p-8">
       <Header name="Project Management Dashboard" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+     
+      
         {/* Task Priority Distribution Chart */}
         <div className="rounded-lg bg-white p-4 shadow dark:bg-dark-secondary">
           <h3 className="mb-4 text-lg font-semibold dark:text-white">
