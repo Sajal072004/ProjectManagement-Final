@@ -4,11 +4,11 @@ import {
   Priority,
   Status,
   useGetCognitoIdByUsernameQuery,
-} from "@/src/state/api"; // Import the query hook
-import React, { useState } from "react";
+} from "@/src/state/api";
+import React, { useState, useEffect } from "react";
 import { formatISO } from "date-fns";
-import { useUser } from "@clerk/nextjs"; // Import Clerk's useUser hook
-import { toast } from "react-toastify"; // Import toast from react-toastify
+import { useUser } from "@clerk/nextjs";
+import { toast } from "react-toastify";
 
 type Props = {
   isOpen: boolean;
@@ -17,8 +17,8 @@ type Props = {
 };
 
 const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
-  const { user } = useUser(); // Get user information from Clerk
-  const userId = user?.id; // Extract userId from Clerk
+  const { user } = useUser();
+  const userId = user?.id;
   const [createTask, { isLoading }] = useCreateTaskMutation();
 
   // Form states
@@ -29,28 +29,48 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
   const [tags, setTags] = useState("");
   const [startDate, setStartDate] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [authorUserId, setAuthorUserId] = useState<string | undefined>(userId); // Author userId (from Clerk)
-  const [assignedUsername, setAssignedUsername] = useState(""); // Username input
-  const [assignedCognitoId, setAssignedCognitoId] = useState<string | null>(
-    null,
-  ); // Fetched cognitoId
+  const [authorUserId, setAuthorUserId] = useState<string | undefined>(userId);
+  const [assignedUsername, setAssignedUsername] = useState("");
+  const [assignedCognitoId, setAssignedCognitoId] = useState<string | null>(null);
   const [projectId, setProjectId] = useState("");
 
-  // Fetch cognitoId by username
+  // Debounce username query
+  const [debouncedUsername, setDebouncedUsername] = useState("");
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Fetch cognitoId by username with debounce
   const { data: assignedUserData } = useGetCognitoIdByUsernameQuery(
-    { username: assignedUsername },
-    { skip: !assignedUsername }, // Skip until there's a username
+    { username: debouncedUsername },
+    { skip: !debouncedUsername }
   );
 
   // Update assignedCognitoId when assignedUserData changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (assignedUserData) {
       setAssignedCognitoId(assignedUserData.cognitoId);
     }
   }, [assignedUserData]);
 
+  // Debounce the username input
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const username = e.target.value;
+    setAssignedUsername(username);
+
+    // Clear the previous timeout if the user is still typing
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // Set a new timeout to trigger the query after 500ms of inactivity
+    setTypingTimeout(
+      setTimeout(() => {
+        setDebouncedUsername(username);
+      }, 1500) // Adjust debounce delay (500ms) as needed
+    );
+  };
+
   const handleSubmit = async () => {
-    if (!title || !userId || !(id !== null || projectId)) return; // Ensure userId and projectId are valid
+    if (!title || !userId || !(id !== null || projectId)) return;
 
     const formattedStartDate = formatISO(new Date(startDate), {
       representation: "complete",
@@ -73,7 +93,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
         projectId: id !== null ? Number(id) : Number(projectId),
       });
 
-      // Show success toast
       toast.success("Task created successfully!");
 
       // Clear form entries after successful task creation
@@ -88,16 +107,14 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
       setAssignedCognitoId(null);
       setProjectId("");
 
-      // Optionally close the modal
       onClose();
     } catch (error) {
-      // Handle error (optional)
       toast.error("Failed to create task. Please try again.");
     }
   };
 
   const isFormValid = () => {
-    return title && authorUserId && (id !== null || projectId); // Check if form is valid
+    return title && authorUserId && (id !== null || projectId);
   };
 
   const selectStyles =
@@ -115,7 +132,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           handleSubmit();
         }}
       >
-        {/* Task Title */}
         <input
           type="text"
           className={inputStyles}
@@ -124,7 +140,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        {/* Task Description */}
         <textarea
           className={inputStyles}
           placeholder="Description"
@@ -132,7 +147,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        {/* Status and Priority Select */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-2">
           <select
             className={selectStyles}
@@ -161,7 +175,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           </select>
         </div>
 
-        {/* Tags */}
         <input
           type="text"
           className={inputStyles}
@@ -170,7 +183,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           onChange={(e) => setTags(e.target.value)}
         />
 
-        {/* Start and Due Dates */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-2">
           <input
             type="date"
@@ -186,16 +198,14 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           />
         </div>
 
-        {/* Assigned Username */}
         <input
           type="text"
           className={inputStyles}
           placeholder="Assigned Username"
           value={assignedUsername}
-          onChange={(e) => setAssignedUsername(e.target.value)}
+          onChange={handleUsernameChange}
         />
 
-        {/* Project ID */}
         {id === null && (
           <input
             type="text"
@@ -206,7 +216,6 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
           />
         )}
 
-        {/* Submit Button */}
         <button
           type="submit"
           className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
