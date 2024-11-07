@@ -2,74 +2,98 @@ import { Task } from '@/src/state/api';
 import React from 'react';
 import { format } from "date-fns";
 import Image from 'next/image';
+import { useGetUsernameByCognitoIdQuery } from '@/src/state/api';
 
 type Props = {
   task: Task;
 };
 
 const TaskCard = ({ task }: Props) => {
+  const { data: authorData } = useGetUsernameByCognitoIdQuery({ cognitoId: task.authorUserId || "" });
+  const { data: assigneeData } = useGetUsernameByCognitoIdQuery({ cognitoId: task.assignedUserId || "" });
+
   return (
-    <div className='mb-4 rounded-lg border border-gray-200 bg-white p-6 shadow-lg transition-transform transform hover:scale-105 dark:bg-dark-secondary dark:border-dark-border'>
+    <div className="relative mb-6 rounded-lg border-l-4 border-blue-500 bg-white p-6 shadow-lg transition-transform transform hover:scale-105 dark:bg-dark-secondary dark:border-blue-400">
+      {/* Left colored line */}
+      <div className="absolute top-0 left-0 h-full w-1 bg-blue-500 dark:bg-blue-400" />
+
+      {/* Attachments */}
       {task.attachments && task.attachments.length > 0 && (
         <div className="mb-4">
-          <strong className="text-lg text-gray-800 dark:text-gray-200">Attachments:</strong>
-          <div className='flex flex-wrap mt-2'>
-            {task.attachments.length > 0 && (
-              <Image
-                src={`/${task.attachments[0].fileURL}`}
-                alt={task.attachments[0].fileName}
-                width={400}
-                height={200}
-                className="rounded-md shadow-sm"
-              />
-            )}
+          <strong className="text-lg text-blue-600 dark:text-blue-400">Attachments:</strong>
+          <div className="flex flex-wrap mt-2">
+            <Image
+              src={`/${task.attachments[0].fileURL}`}
+              alt={task.attachments[0].fileName}
+              width={400}
+              height={200}
+              className="rounded-md shadow-sm"
+            />
           </div>
         </div>
       )}
 
-      <div className="mb-4">
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>ID:</strong> <span className="font-semibold">{task.id}</span>
-        </p>
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Title:</strong> <span className="font-semibold">{task.title}</span>
-        </p>
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Description:</strong> <span className="font-semibold">{task.description || "No description provided"}</span>
-        </p>
-      </div>
+      {/* Task Information */}
+      <div className="space-y-4">
+        {/* ID */}
+        <div className="flex items-start">
+          <p className="font-bold text-blue-600 dark:text-blue-400">ID:</p>
+          <span className="ml-2 text-gray-800 dark:text-gray-200">{task.id}</span>
+        </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Status:</strong> <span className="font-semibold">{task.status}</span>
-        </p>
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Priority:</strong> <span className="font-semibold">{task.priority}</span>
-        </p>
-      </div>
+        {/* Title */}
+        <div className="flex items-start">
+          <p className="font-bold text-blue-600 dark:text-blue-400 text-lg">Title:</p>
+          <span className="ml-2 text-lg font-semibold text-gray-800 dark:text-gray-200">{task.title}</span>
+        </div>
 
-      <div className="mb-4">
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Tags:</strong> <span className="font-semibold">{task.tags || "No Tags"}</span>
-        </p>
-      </div>
+        {/* Description */}
+        <div className="flex items-start">
+          <p className="font-bold text-blue-600 dark:text-blue-400">Description:</p>
+          <span className="ml-2 text-gray-800 dark:text-gray-200">{task.description || "No description provided"}</span>
+        </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Start Date:</strong> <span className="font-semibold">{task.startDate ? format(new Date(task.startDate), "P") : "Not Set"}</span>
-        </p>
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Due Date:</strong> <span className="font-semibold">{task.dueDate ? format(new Date(task.dueDate), "P") : "Not Set"}</span>
-        </p>
-      </div>
+        {/* Status and Priority */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-start">
+            <p className="font-bold text-blue-600 dark:text-blue-400">Status:</p>
+            <span className="ml-2 text-gray-800 dark:text-gray-200">{task.status}</span>
+          </div>
+          <div className="flex items-start">
+            <p className="font-bold text-blue-600 dark:text-blue-400">Priority:</p>
+            <span className="ml-2 text-gray-800 dark:text-gray-200">{task.priority}</span>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Author:</strong> <span className="font-semibold">{task.author ? task.author.username : "Unknown"}</span>
-        </p>
-        <p className='text-md text-gray-600 dark:text-gray-400'>
-          <strong>Assignee:</strong> <span className="font-semibold">{task.assignee ? task.assignee.username : "Unassigned"}</span>
-        </p>
+        {/* Tags */}
+        <div className="flex items-start">
+          <p className="font-bold text-blue-600 dark:text-blue-400">Tags:</p>
+          <span className="ml-2 text-gray-800 dark:text-gray-200">{task.tags || "No Tags"}</span>
+        </div>
+
+        {/* Start Date and Due Date */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-start">
+            <p className="font-bold text-blue-600 dark:text-blue-400">Start Date:</p>
+            <span className="ml-2 text-gray-800 dark:text-gray-200">{task.startDate ? format(new Date(task.startDate), "P") : "Not Set"}</span>
+          </div>
+          <div className="flex items-start">
+            <p className="font-bold text-blue-600 dark:text-blue-400">Due Date:</p>
+            <span className="ml-2 text-gray-800 dark:text-gray-200">{task.dueDate ? format(new Date(task.dueDate), "P") : "Not Set"}</span>
+          </div>
+        </div>
+
+        {/* Author and Assignee */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-start">
+            <p className="font-bold text-blue-600 dark:text-blue-400">Author:</p>
+            <span className="ml-2 text-gray-800 dark:text-gray-200">{authorData?.username || "Unknown"}</span>
+          </div>
+          <div className="flex items-start">
+            <p className="font-bold text-blue-600 dark:text-blue-400">Assignee:</p>
+            <span className="ml-2 text-gray-800 dark:text-gray-200">{assigneeData?.username || "Unassigned"}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

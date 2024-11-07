@@ -149,6 +149,15 @@ export const api = createApi({
     getCognitoIdByUsername: build.query<{ cognitoId: string }, { username: string }>({
       query: ({ username }) => `users/username/${username}`,
     }),
+    getUsernameByCognitoId: build.query<{ username: string }, { cognitoId: string }>({
+      query: ({ cognitoId }) => `users/users/${cognitoId}/username`,
+    }),
+    getUserByCognitoId: build.query<User, { cognitoId: string }>({
+      query: ({ cognitoId }) => `users/${cognitoId}`, // Endpoint to fetch user by cognitoId
+      providesTags: (result, error, { cognitoId }) => [
+        { type: "Users", cognitoId }
+      ],
+    }),
   }),
 });
 
@@ -163,5 +172,8 @@ export const {
   useGetTeamsQuery,
   useGetTasksByUserQuery,
   useGetTasksByCognitoIdQuery,
+  useGetUsernameByCognitoIdQuery,
+  useGetUserByCognitoIdQuery,
   useGetCognitoIdByUsernameQuery, // Export hook for new endpoint
+  
 } = api;

@@ -78,3 +78,47 @@ export const getCognitoIdByUsername = async (req: Request, res: Response): Promi
     res.status(500).json({ message: `Error retrieving cognitoId: ${error.message}` });
   }
 };
+
+export const getUsernameByCognitoId = async (req: Request, res: Response): Promise<void> => {
+  const { cognitoId } = req.params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        cognitoId: cognitoId,
+      },
+      select: {
+        username: true,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.json({ username: user.username });
+  } catch (error: any) {
+    res.status(500).json({ message: `Error retrieving username: ${error.message}` });
+  }
+};
+
+
+export const getUserByCognitoId = async (req: Request, res: Response): Promise<void> => {
+  const { cognitoId } = req.params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        cognitoId: cognitoId,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.json(user);
+  } catch (error: any) {
+    res.status(500).json({ message: `Error retrieving user by cognitoId: ${error.message}` });
+  }
+};

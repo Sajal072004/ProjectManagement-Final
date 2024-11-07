@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState } from 'react';
 import { Priority, Task, useGetTasksByUserQuery } from '@/src/state/api';
@@ -9,10 +8,6 @@ import TaskCard from '@/src/components/TaskCard';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { dataGridClassNames, dataGridSxStyles } from '@/src/lib/utils';
 import { useUser } from "@clerk/nextjs";
-
-
-
-
 
 const columns: GridColDef[] = [
   {
@@ -69,7 +64,7 @@ const columns: GridColDef[] = [
   },
 ];
 
- export default function ReuseablePriorityPage({priority}:any) {
+export default function ReuseablePriorityPage({ priority }: any) {
   const [view, setView] = useState("list");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
@@ -78,7 +73,7 @@ const columns: GridColDef[] = [
 
   const { data: tasks, isLoading, isError: isTasksError } = useGetTasksByUserQuery(
     { userId },
-    { skip: !userId } 
+    { skip: !userId }
   );
 
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
@@ -119,6 +114,8 @@ const columns: GridColDef[] = [
 
       {isLoading ? (
         <div>Loading tasks...</div>
+      ) : filteredTasks?.length === 0 ? (
+        <div>No tasks found</div>
       ) : view === "list" ? (
         <div className="grid grid-cols-1 gap-4">
           {filteredTasks?.map((task: Task) => (
@@ -141,9 +138,4 @@ const columns: GridColDef[] = [
       )}
     </div>
   );
-};
-
-
-
-
-
+}
