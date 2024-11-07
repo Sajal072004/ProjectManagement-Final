@@ -2,6 +2,12 @@
 
 export default {
   images: {
-    domains: ['img.clerk.com'], // Allow images from img.clerk.com
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com', // replace with your image host
+        pathname: '/**',
+      },
+    ],
   },
 };
