@@ -150,7 +150,7 @@ app.get('/update-projects', async (req, res) => {
 });
 
 cron.schedule('*/7 * * * *', async () => {
-    const url = 'https://projectmanagement-final.onrender.com/projects/projects';
+    const url = 'https://projectmanagement-final-b30o.onrender.com/projects/projects';
     try {
         const response = await fetch(url, {
             method: 'GET',
